@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Love Message Rain</title>
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      overflow: hidden;
+      perspective: 1500px;
+      font-family: Arial, sans-serif;
+    }
+
+    .message {
+      position: absolute;
+      color: #ff4d4d;
+      font-size: 4vw;
+      white-space: nowrap;
+      animation: fall linear;
+      will-change: transform;
+      text-shadow: 0 0 10px red;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translate3d(var(--x), -50px, var(--z)) rotateX(30deg);
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translate3d(var(--x), 100vh, var(--z)) rotateX(90deg);
+        opacity: 0;
+      }
+    }
+
+    .photo {
+      position: fixed;
+      top: var(--heart-y);
+      left: var(--heart-x);
+      transform: translate(-50%, -50%) scale(0.1);
+      max-width: 90vw;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: 20px;
+      box-shadow: 0 0 50px rgba(255, 0, 0, 0.7);
+      pointer-events: none;
+      z-index: 999;
+      animation: moveToCenterAndScale 5s ease-out forwards;
+    }
+
+    @keyframes moveToCenterAndScale {
+      0% {
+        top: var(--heart-y);
+        left: var(--heart-x);
+        transform: translate(-50%, -50%) scale(0.1);
+        opacity: 0.8;
+      }
+      30% {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.6);
+        opacity: 1;
+      }
+      70% {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+      95% {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.8;
+      }
+      100% {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .message {
+        font-size: 6vw;
+      }
+      .photo {
+        max-width: 95vw;
+        max-height: 95vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <audio id="backgroundMusic" loop autoplay muted>
+    <source src="nhac.mp3" type="audio/mpeg">
+    Trình duyệt của bạn không hỗ trợ thẻ audio.
+  </audio>
+
+  <script>
+    const messages = [
+      'Chúc mừng sinh nhật vợ ❤️',
+      'Chúc chúng ta vẫn như ngày đầu ❤️',
+      'Chúc vợ mãi trẻ đẹp ❤️',
+      'Anh và con luôn yêu em ❤️'
+    ];
+
+    const imageFiles = [
+      'an1.jpg', 'an2.jpg', 'an3.jpg', 'an4.jpg',
+      'an5.jpg', 'an6.jpg', 'an7.jpg', 'an8.jpg'
+    ];
+
+    function createMessage(triggerImage = false, heartElement = null) {
+      const msg = document.createElement('div');
+      msg.className = 'message';
+      msg.textContent = messages[Math.floor(Math.random() * messages.length)];
+
+      const x = Math.random() * window.innerWidth + 'px';
+      const z = (Math.random() - 0.5) * 2000 + 'px';
+      const duration = 4 + Math.random() * 3;
+
+      msg.style.setProperty('--x', x);
+      msg.style.setProperty('--z', z);
+      msg.style.left = x;
+      msg.style.animationDuration = duration + 's';
+
+      document.body.appendChild(msg);
+
+      msg.addEventListener('animationend', () => {
+        if (triggerImage && heartElement) {
+          const img = document.createElement('img');
+          img.className = 'photo';
+
+          // Lấy vị trí chính xác của trái tim
+          const rect = heartElement.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+
+          img.style.setProperty('--heart-x', centerX + 'px');
+          img.style.setProperty('--heart-y', centerY + 'px');
+
+          img.src = imageFiles[Math.floor(Math.random() * imageFiles.length)];
+          document.body.appendChild(img);
+          setTimeout(() => img.remove(), 5000);
+        }
+        msg.remove();
+      });
+    }
+
+    setInterval(() => {
+      createMessage(false);
+    }, 500);
+
+    setInterval(() => {
+      const messagesOnScreen = document.querySelectorAll('.message');
+      if (messagesOnScreen.length > 0) {
+        const index = Math.floor(Math.random() * messagesOnScreen.length);
+        const chosen = messagesOnScreen[index];
+        createMessage(true, chosen);
+      }
+    }, 3000);
+
+    const backgroundMusic = document.getElementById('backgroundMusic');
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const enableAudio = () => {
+        if (backgroundMusic.muted) {
+          backgroundMusic.muted = false;
+          backgroundMusic.play().catch(console.error);
+          document.removeEventListener('click', enableAudio);
+          document.removeEventListener('touchstart', enableAudio);
+        }
+      };
+
+      document.addEventListener('click', enableAudio);
+      document.addEventListener('touchstart', enableAudio);
+      backgroundMusic.play().catch(console.warn);
+    });
+  </script>
+</body>
+</html>
