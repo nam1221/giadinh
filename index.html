@@ -3,70 +3,59 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Rơi ảnh nhẹ nhàng</title>
+  <title>Love Message Rain - Ảnh rơi giữa</title>
   <style>
     body {
       margin: 0;
       background: black;
       overflow: hidden;
+      perspective: 1500px;
+      font-family: Arial, sans-serif;
     }
 
-    .falling-photo {
+    .message {
       position: absolute;
-      top: -150px;
+      color: #ff4d4d;
+      font-size: 4vw;
+      white-space: nowrap;
+      animation: fall linear;
+      will-change: transform;
+      text-shadow: 0 0 10px red;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translate3d(var(--x), -50px, var(--z)) rotateX(30deg);
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translate3d(var(--x), 100vh, var(--z)) rotateX(90deg);
+        opacity: 0;
+      }
+    }
+
+    .photo {
+      position: absolute;
+      top: -200px;
       left: 50%;
       transform: translateX(-50%);
       width: 300px;
       max-width: 80vw;
+      max-height: 80vh;
       border-radius: 20px;
       box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
-      opacity: 0;
-      animation: dropAndFade 5s ease-in forwards;
+      animation: fallToCenter 3s ease-out forwards;
+      pointer-events: none;
+      z-index: 999;
     }
 
-    @keyframes dropAndFade {
+    @keyframes fallToCenter {
       0% {
-        top: -150px;
+        top: -200px;
         opacity: 0;
-        transform: translateX(-50%) scale(0.7);
       }
-      50% {
-        opacity: 1;
-        transform: translateX(-50%) scale(1);
-      }
-      100% {
-        top: 50%;
-        opacity: 0;
-        transform: translateX(-50%) scale(1.2);
-      }
-    }
-  </style>
-</head>
-<body>
-
-<script>
-  const imageList = [
-    "an1.jpg", "an2.jpg", "an3.jpg", "an4.jpg",
-    "an5.jpg", "an6.jpg", "an7.jpg", "an8.jpg"
-  ];
-  let index = 0;
-
-  function dropImage() {
-    const img = document.createElement('img');
-    img.src = imageList[index % imageList.length];
-    img.className = 'falling-photo';
-
-    document.body.appendChild(img);
-
-    // Tự xóa sau 5s
-    setTimeout(() => img.remove(), 5000);
-
-    index++;
-  }
-
-  // Rơi mỗi 0.5s
-  setInterval(dropImage, 500);
-</script>
-
-</body>
-</html>
+      30% {
+        opacity
