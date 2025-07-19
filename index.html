@@ -3,155 +3,70 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Love Message Rain</title>
+  <title>Rơi ảnh nhẹ nhàng</title>
   <style>
     body {
       margin: 0;
       background: black;
       overflow: hidden;
-      perspective: 1500px;
-      font-family: Arial, sans-serif;
     }
-    .message {
+
+    .falling-photo {
       position: absolute;
-      color: #ff4d4d;
-      font-size: 4vw;
-      white-space: nowrap;
-      animation: fall linear;
-      will-change: transform;
-      text-shadow: 0 0 10px red;
-    }
-    @keyframes fall {
-      0% {
-        transform: translate3d(var(--x), -50px, var(--z)) rotateX(30deg);
-        opacity: 1;
-      }
-      90% {
-        opacity: 1;
-      }
-      100% {
-        transform: translate3d(var(--x), 100vh, var(--z)) rotateX(90deg);
-        opacity: 0;
-      }
-    }
-
-    .photo {
-      position: fixed;
-      top: 50%;
+      top: -150px;
       left: 50%;
-      transform: translate(-50%, -50%) scale(0.1);
-      max-width: 90vw;
-      max-height: 90vh;
-      object-fit: contain;
+      transform: translateX(-50%);
+      width: 300px;
+      max-width: 80vw;
       border-radius: 20px;
-      box-shadow: 0 0 50px rgba(255, 0, 0, 0.7);
-      pointer-events: none;
-      z-index: 999;
-      animation: moveToCenterAndScale 5s ease-out forwards;
+      box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+      opacity: 0;
+      animation: dropAndFade 5s ease-in forwards;
     }
 
-    @keyframes moveToCenterAndScale {
+    @keyframes dropAndFade {
       0% {
-        transform: translate(-50%, -50%) scale(0.1);
-        opacity: 0.8;
+        top: -150px;
+        opacity: 0;
+        transform: translateX(-50%) scale(0.7);
       }
-      30% {
-        transform: translate(-50%, -50%) scale(0.6);
+      50% {
         opacity: 1;
-      }
-      70% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 1;
-      }
-      95% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 0.8;
+        transform: translateX(-50%) scale(1);
       }
       100% {
-        transform: translate(-50%, -50%) scale(0);
+        top: 50%;
         opacity: 0;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .message {
-        font-size: 6vw;
-      }
-      .photo {
-        max-width: 95vw;
-        max-height: 95vh;
+        transform: translateX(-50%) scale(1.2);
       }
     }
   </style>
 </head>
 <body>
-  <audio id="backgroundMusic" autoplay loop>
-    <source src="nhac.mp3" type="audio/mpeg" />
-    Trình duyệt của bạn không hỗ trợ phát nhạc.
-  </audio>
 
-  <script>
-    const messages = [
-      'Chúc mừng sinh nhật vợ ❤️',
-      'Chúc chúng ta vẫn như ngày đầu ❤️',
-      'Chúc vợ mãi trẻ đẹp ❤️',
-      'Anh và con luôn yêu em ❤️'
-    ];
+<script>
+  const imageList = [
+    "an1.jpg", "an2.jpg", "an3.jpg", "an4.jpg",
+    "an5.jpg", "an6.jpg", "an7.jpg", "an8.jpg"
+  ];
+  let index = 0;
 
-    const imageFiles = [
-      'an1.jpg', 'an2.jpg', 'an3.jpg', 'an4.jpg',
-      'an5.jpg', 'an6.jpg', 'an7.jpg', 'an8.jpg'
-    ];
+  function dropImage() {
+    const img = document.createElement('img');
+    img.src = imageList[index % imageList.length];
+    img.className = 'falling-photo';
 
-    function createMessage(triggerImage = false) {
-      const msg = document.createElement('div');
-      msg.className = 'message';
-      msg.textContent = messages[Math.floor(Math.random() * messages.length)];
+    document.body.appendChild(img);
 
-      const x = Math.random() * window.innerWidth + 'px';
-      const z = (Math.random() - 0.5) * 2000 + 'px';
-      const duration = 4 + Math.random() * 3;
+    // Tự xóa sau 5s
+    setTimeout(() => img.remove(), 5000);
 
-      msg.style.setProperty('--x', x);
-      msg.style.setProperty('--z', z);
-      msg.style.left = x;
-      msg.style.animationDuration = duration + 's';
+    index++;
+  }
 
-      document.body.appendChild(msg);
+  // Rơi mỗi 0.5s
+  setInterval(dropImage, 500);
+</script>
 
-      msg.addEventListener('animationend', () => {
-        if (triggerImage) {
-          const img = document.createElement('img');
-          img.className = 'photo';
-          img.style.setProperty('--heart-x', '50%');
-          img.style.setProperty('--heart-y', '50%');
-          img.src = imageFiles[Math.floor(Math.random() * imageFiles.length)];
-          document.body.appendChild(img);
-          setTimeout(() => img.remove(), 5000);
-        }
-        msg.remove();
-      });
-    }
-
-    // Tim rơi đều
-    setInterval(() => createMessage(false), 500);
-
-    // Mỗi 3 giây, một tim sinh ra ảnh
-    setInterval(() => {
-      createMessage(true);
-    }, 3000);
-
-    // Tự động phát nhạc nếu được phép
-    window.addEventListener('load', () => {
-      const music = document.getElementById('backgroundMusic');
-      music.muted = false;
-      music.play().catch(() => {
-        // Nếu bị chặn, yêu cầu click mới phát
-        document.body.addEventListener('click', () => {
-          music.play();
-        }, { once: true });
-      });
-    });
-  </script>
 </body>
 </html>
