@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Love Message Rain</title>
   <style>
     body {
@@ -12,7 +12,6 @@
       perspective: 1500px;
       font-family: Arial, sans-serif;
     }
-
     .message {
       position: absolute;
       color: #ff4d4d;
@@ -22,7 +21,6 @@
       will-change: transform;
       text-shadow: 0 0 10px red;
     }
-
     @keyframes fall {
       0% {
         transform: translate3d(var(--x), -50px, var(--z)) rotateX(30deg);
@@ -39,8 +37,8 @@
 
     .photo {
       position: fixed;
-      top: var(--heart-y);
-      left: var(--heart-x);
+      top: 50%;
+      left: 50%;
       transform: translate(-50%, -50%) scale(0.1);
       max-width: 90vw;
       max-height: 90vh;
@@ -54,32 +52,22 @@
 
     @keyframes moveToCenterAndScale {
       0% {
-        top: var(--heart-y);
-        left: var(--heart-x);
         transform: translate(-50%, -50%) scale(0.1);
         opacity: 0.8;
       }
       30% {
-        top: 50%;
-        left: 50%;
         transform: translate(-50%, -50%) scale(0.6);
         opacity: 1;
       }
       70% {
-        top: 50%;
-        left: 50%;
         transform: translate(-50%, -50%) scale(1);
         opacity: 1;
       }
       95% {
-        top: 50%;
-        left: 50%;
         transform: translate(-50%, -50%) scale(1);
         opacity: 0.8;
       }
       100% {
-        top: 50%;
-        left: 50%;
         transform: translate(-50%, -50%) scale(0);
         opacity: 0;
       }
@@ -97,9 +85,9 @@
   </style>
 </head>
 <body>
-  <audio id="backgroundMusic" loop autoplay muted>
+  <audio id="backgroundMusic" loop autoplay>
     <source src="nhac.mp3" type="audio/mpeg">
-    Trình duyệt của bạn không hỗ trợ thẻ audio.
+    Trình duyệt của bạn không hỗ trợ phát nhạc.
   </audio>
 
   <script>
@@ -135,15 +123,6 @@
         if (triggerImage && heartElement) {
           const img = document.createElement('img');
           img.className = 'photo';
-
-          // Lấy vị trí chính xác của trái tim
-          const rect = heartElement.getBoundingClientRect();
-          const centerX = rect.left + rect.width / 2;
-          const centerY = rect.top + rect.height / 2;
-
-          img.style.setProperty('--heart-x', centerX + 'px');
-          img.style.setProperty('--heart-y', centerY + 'px');
-
           img.src = imageFiles[Math.floor(Math.random() * imageFiles.length)];
           document.body.appendChild(img);
           setTimeout(() => img.remove(), 5000);
@@ -152,34 +131,29 @@
       });
     }
 
+    // Rơi tim liên tục
     setInterval(() => {
       createMessage(false);
     }, 500);
 
+    // Rơi ảnh từ tim ngẫu nhiên mỗi 3s
     setInterval(() => {
       const messagesOnScreen = document.querySelectorAll('.message');
       if (messagesOnScreen.length > 0) {
-        const index = Math.floor(Math.random() * messagesOnScreen.length);
-        const chosen = messagesOnScreen[index];
+        const chosen = messagesOnScreen[Math.floor(Math.random() * messagesOnScreen.length)];
         createMessage(true, chosen);
       }
     }, 3000);
 
-    const backgroundMusic = document.getElementById('backgroundMusic');
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const enableAudio = () => {
-        if (backgroundMusic.muted) {
-          backgroundMusic.muted = false;
-          backgroundMusic.play().catch(console.error);
-          document.removeEventListener('click', enableAudio);
-          document.removeEventListener('touchstart', enableAudio);
-        }
-      };
-
-      document.addEventListener('click', enableAudio);
-      document.addEventListener('touchstart', enableAudio);
-      backgroundMusic.play().catch(console.warn);
+    // Phát nhạc tự động khi trang tải (có thể bị chặn bởi trình duyệt)
+    window.addEventListener('load', () => {
+      const audio = document.getElementById('backgroundMusic');
+      audio.muted = false;
+      audio.play().catch(() => {
+        document.body.addEventListener('click', () => {
+          audio.play();
+        }, { once: true });
+      });
     });
   </script>
 </body>
