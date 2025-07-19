@@ -85,8 +85,8 @@
   </style>
 </head>
 <body>
-  <audio id="backgroundMusic" loop autoplay>
-    <source src="nhac.mp3" type="audio/mpeg">
+  <audio id="backgroundMusic" autoplay loop>
+    <source src="nhac.mp3" type="audio/mpeg" />
     Trình duyệt của bạn không hỗ trợ phát nhạc.
   </audio>
 
@@ -103,7 +103,7 @@
       'an5.jpg', 'an6.jpg', 'an7.jpg', 'an8.jpg'
     ];
 
-    function createMessage(triggerImage = false, heartElement = null) {
+    function createMessage(triggerImage = false) {
       const msg = document.createElement('div');
       msg.className = 'message';
       msg.textContent = messages[Math.floor(Math.random() * messages.length)];
@@ -120,9 +120,11 @@
       document.body.appendChild(msg);
 
       msg.addEventListener('animationend', () => {
-        if (triggerImage && heartElement) {
+        if (triggerImage) {
           const img = document.createElement('img');
           img.className = 'photo';
+          img.style.setProperty('--heart-x', '50%');
+          img.style.setProperty('--heart-y', '50%');
           img.src = imageFiles[Math.floor(Math.random() * imageFiles.length)];
           document.body.appendChild(img);
           setTimeout(() => img.remove(), 5000);
@@ -131,27 +133,22 @@
       });
     }
 
-    // Rơi tim liên tục
-    setInterval(() => {
-      createMessage(false);
-    }, 500);
+    // Tim rơi đều
+    setInterval(() => createMessage(false), 500);
 
-    // Rơi ảnh từ tim ngẫu nhiên mỗi 3s
+    // Mỗi 3 giây, một tim sinh ra ảnh
     setInterval(() => {
-      const messagesOnScreen = document.querySelectorAll('.message');
-      if (messagesOnScreen.length > 0) {
-        const chosen = messagesOnScreen[Math.floor(Math.random() * messagesOnScreen.length)];
-        createMessage(true, chosen);
-      }
+      createMessage(true);
     }, 3000);
 
-    // Phát nhạc tự động khi trang tải (có thể bị chặn bởi trình duyệt)
+    // Tự động phát nhạc nếu được phép
     window.addEventListener('load', () => {
-      const audio = document.getElementById('backgroundMusic');
-      audio.muted = false;
-      audio.play().catch(() => {
+      const music = document.getElementById('backgroundMusic');
+      music.muted = false;
+      music.play().catch(() => {
+        // Nếu bị chặn, yêu cầu click mới phát
         document.body.addEventListener('click', () => {
-          audio.play();
+          music.play();
         }, { once: true });
       });
     });
